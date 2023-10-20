@@ -1,34 +1,36 @@
-import { Component } from "react"
-import { FormButton, Form, FormInputContainer, InputField, InputLabel } from "./ContactForm.styled"
+import { useState } from 'react';
+import {
+    FormButton,
+    Form,
+    FormInputContainer,
+    InputField,
+    InputLabel,
+} from './ContactForm.styled';
 import { nanoid } from 'nanoid';
 
-class ContactForm extends Component {
-    state = {
-        name: '',
-        number: ''
-    }
+const ContactForm = ({ addContactData }) => {
+    const [name, setName] = useState('');
+    const [number, setNumber] = useState('');
 
-    addContact = (e) => {
+    const addContact = e => {
         e.preventDefault();
         const newContact = {
-            name: this.state.name,
-            number: this.state.number,
-            id: nanoid()
-        }
-        this.props.addContactData(newContact, this.state);
-        this.setState({
-            name: '',
-            number: ''
-        })
+            name,
+            number,
+            id: nanoid(),
+        };
+        addContactData(newContact, { name, number });
+        setName('');
+        setNumber('');
+    };
 
-    }
+    const getContactData = ({ target: { name, value } }) => {
+        if (name === 'name') setName(value);
+        else setNumber(value);
+    };
 
-    getContactData = ({ target: { name, value } }) => {
-        this.setState({ [name]: value })
-    }
-
-    render() {
-        return <Form onSubmit={this.addContact}>
+    return (
+        <Form onSubmit={addContact}>
             <FormInputContainer>
                 <InputField
                     type="tel"
@@ -36,8 +38,8 @@ class ContactForm extends Component {
                     pattern="\+?\d{1,4}?[ .\-\s]?\(?\d{1,3}?\)?[ .\-\s]?\d{1,4}[ .\-\s]?\d{1,4}[ .\-\s]?\d{1,9}"
                     title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
                     autoComplete="off"
-                    onChange={this.getContactData}
-                    value={this.state.number}
+                    onChange={getContactData}
+                    value={number}
                     required
                 />
                 <InputLabel>Number</InputLabel>
@@ -47,18 +49,14 @@ class ContactForm extends Component {
                     pattern="^[a-zA-Zа-яА-Я]+(([' \-][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
                     title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
                     autoComplete="off"
-                    value={this.state.name}
-                    onChange={this.getContactData}
+                    value={name}
+                    onChange={getContactData}
                     required
                 />
                 <InputLabel>Name</InputLabel>
             </FormInputContainer>
             <FormButton type="submit">Add contact</FormButton>
         </Form>
-    }
-
-
-
-
-}
+    );
+};
 export default ContactForm;
